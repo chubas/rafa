@@ -1,0 +1,13 @@
+Rafa
+====
+
+This module provides an extension to ActionView helpers as a wrapper for the Raphael.js library [http://raphaeljs.com/], that makes easy to add SVG ans canvas elements to the page and make use of the Raphael library within Rails.
+
+Currently works with Raphael version 0.6.3
+
+Example
+=======
+
+You can see the example at rafa/examples/example.html.erb
+
+Copyright (c) 2009 Ruben Medellin <ruben.medellin.c@gmail.com>, released under the MIT license

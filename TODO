@@ -1,0 +1,6 @@
+* Add path creation as a basic shape
+* Add a custom method to check or specify valid attributes for shapes
+* Add more comprehensive errors and exceptions
+* MAKE TESTS!
+* Ability to inject javascript code in animations that doesn't output until 
+  the end of the block code
