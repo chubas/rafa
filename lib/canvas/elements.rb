@@ -27,6 +27,7 @@ module Rafa
       # It applies the given attributes to the object.
       def apply_attributes(attributes)
         attributes.each { |k, v| self[k] = v }
+        self
       end
 
       # Wrapper for the _rotate_ method of raphael.
@@ -38,17 +39,20 @@ module Rafa
           angle = radians_to_degrees(angle)
         end
         @canvas << "#{@name}.rotate(#{angle}, #{!!absolute});"
+        self
       end
 
       # Wrapper for the +translate+ method of raphael.
       # Accepts a delta x and a delta y
       def translate(dx, dy)
         @canvas << "#{@name}.translate(#{dx}, #{dy})"
+        self
       end
 
       # Wrapper for the +scale+ method of raphael.
       def scale(scaleX, scaleY)
         @canvas << "#{@name}.scale(#{scaleX}, #{scaleY})"
+        self
       end
 
       # Scales just the x component. See +:scale+
@@ -84,6 +88,7 @@ module Rafa
       # verbatim. Other way, it is printed as a javascript string or numeric value.
       # The printed value is the result of calling the +to_json+ method of such object.
       def []=(attribute, value)
+        attribute = attribute.to_s
         attribute = attribute.to_s.gsub(/[^a-zA-Z0-9_\-]/, '')
         unless POSSIBLE_ATTRIBUTES.include? attribute
           # FIXME: Log, don't print
@@ -109,6 +114,26 @@ module Rafa
         else
           super(name, *args, &block)
         end
+      end
+
+      # Wrapper for the raphael +node+ method. Returns the name of the variable
+      # that holds the returning element
+      def node
+        nodename = "#{@name}_node"
+        @canvas << "var #{nodename} = #{@name}.node;"
+        nodename
+      end
+
+      # Wrapper for +toFront+ method of raphael
+      def to_front
+        @canvas << "#{@name}.toFront();"
+        self
+      end
+
+      # Wrapper for the +toBack+ method of raphael
+      def to_back
+        @canvas << "#{@name}.toBack();"
+        self
       end
 
     end
