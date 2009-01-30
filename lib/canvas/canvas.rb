@@ -65,6 +65,11 @@ module Rafa
         Text.new(self, *args)
       end
       
+      # Generates a +Path+ object. It yields itself if if block given.
+      def path(*args, &block)
+        Path.new(self, *args, &block)
+      end
+
       # Injects a string directly into javascript output.
       # Used by elements to output its generation code, or can be used externally to
       # inject external javascript code

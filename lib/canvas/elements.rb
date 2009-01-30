@@ -2,6 +2,10 @@ require 'util/util'
 require 'canvas/attributes'
 require 'canvas/boundingbox'
 
+#--
+# TODO: Refactor a way to call "#{@name}.method(#{arguments}) generically"
+#++
+
 module Rafa
   module Elements
 
@@ -13,6 +17,22 @@ module Rafa
       include Rafa::Util
       
       attr_accessor :canvas, :name, :bbox
+
+      # Trick for chained methods to return themselves after a call.
+      # Useful for function call chains, like +rect.fill('#333').rotate(30)+ and such
+      class << self
+        def chainable(*methods)
+          methods.each do |method|
+            self.class_eval <<-CODE
+              alias _chainable_#{method} #{method}
+              def #{method}(*args, &block)
+                _chainable_#{method}(*args, &block)
+                return self
+              end
+            CODE
+          end
+        end
+      end
 
       # At initialization, it generates a unique variable name to identify this element
       # in the javascript. It can be passed in _options_ parameter with the key :id
@@ -27,7 +47,6 @@ module Rafa
       # It applies the given attributes to the object.
       def apply_attributes(attributes)
         attributes.each { |k, v| self[k] = v }
-        self
       end
 
       # Wrapper for the _rotate_ method of raphael.
@@ -36,23 +55,23 @@ module Rafa
       # specified +angle+ into degrees properly
       def rotate(angle, absolute = true, mode = :degrees)
         if mode == :radians
+          unless angle.kind_of? Numeric
+            raise TypeError("#{angle} should be numeric if using with :radians mode")
+          end
           angle = radians_to_degrees(angle)
         end
-        @canvas << "#{@name}.rotate(#{angle}, #{!!absolute});"
-        self
+        @canvas << js_method('rotate', angle, !!absolute)
       end
 
       # Wrapper for the +translate+ method of raphael.
       # Accepts a delta x and a delta y
       def translate(dx, dy)
-        @canvas << "#{@name}.translate(#{dx}, #{dy})"
-        self
+        @canvas << js_method('translate', dx, dy)
       end
 
       # Wrapper for the +scale+ method of raphael.
       def scale(scaleX, scaleY)
-        @canvas << "#{@name}.scale(#{scaleX}, #{scaleY})"
-        self
+        @canvas << js_method('scale', scaleX, scaleY)
       end
 
       # Scales just the x component. See +:scale+
@@ -95,8 +114,7 @@ module Rafa
           puts "Warning! Attribute #{attribute} not recognized"
           return nil
         end
-        attr_str = {attribute => value}.to_json
-        @canvas << "#{@name}.attr(#{attr_str})"
+        @canvas << js_method('attr', {attribute => value})
         return self
       end
       
@@ -126,14 +144,21 @@ module Rafa
 
       # Wrapper for +toFront+ method of raphael
       def to_front
-        @canvas << "#{@name}.toFront();"
-        self
+        @canvas << js_method('toFront')
       end
 
       # Wrapper for the +toBack+ method of raphael
       def to_back
-        @canvas << "#{@name}.toBack();"
-        self
+        @canvas << js_method('toBack')
+      end
+
+      chainable :apply_attributes, :attr
+      chainable :rotate, :scale, :translate
+      chainable :to_front, :to_back
+
+      private
+      def js_method(methodname, *args)
+        "#{@name}.#{methodname}(#{args.map(&:to_json).join(', ')});"
       end
 
     end
@@ -178,6 +203,102 @@ module Rafa
           "var #{@name} = #{@canvas.name}.text(#{x}, #{y}, #{text.inspect});"
         apply_attributes(options)
       end
+    end
+
+    # Represents the _path_ object in raphael
+    class Path < BasicShape
+
+      def initialize(canvas, attributes_or_path = {}, path = nil, &block)
+        puts "Initializing path #{self}!"
+        if attributes_or_path.kind_of? String
+          path = attributes_or_path
+          options = {}
+          super(canvas)
+        elsif attributes_or_path.kind_of? Hash
+          options = attributes_or_path
+          super(canvas, options)
+        else
+          raise BadConstructorException("Second parameter should be either string or hash")
+        end
+        path_str = path ? "" : ", #{path.to_json}"
+        @canvas << "var #{@name} = #{@canvas.name}.path({}#{path_str});"
+        apply_attributes(options)
+        #yield self if block_given?
+        self.instance_eval(&block) if block_given?
+      end
+
+      # Wrapper for the +relatively+ method of raphael
+      def relatively
+        @canvas << js_method('relatively')
+      end
+
+      # Wrapper for the +absolutely+ method of raphael
+      def absolutely
+        @canvas << js_method('absolutely')
+      end
+
+      # Wrapper for the +moveTo+ method of raphael for path drawing
+      def move_to(x, y)
+        @canvas << js_method('moveTo', x, y)
+      end
+      
+      # Wrapper for the +lineTo+ method of raphael for path drawing
+      def line_to(x, y)
+        @canvas << js_method('lineTo', x, y)
+      end
+
+      # Wrapper for the +cplineTo+ method of raphael for path drawing
+      def cpline_to(x, y, width)
+        @canvas << js_method('cplineTo', x, y, width)
+      end
+      
+      # Wrapper for the +curveTo+ method of raphael for path drawing
+      def curve_to(x1, y1, x2, y2, x3, y3)
+        @canvas << js_method('curveTo', x1, y1, x2, y2, x3, y3)
+      end
+
+      # Wrapper for the +qcurveTo+ method of raphael for path drawing
+      def qcurve_to(x1, y1, x2, y2)
+        @canvas << js_method('qcurveTo', x1, y1, x2, y2)
+      end
+
+      # Wrapper for the +addRoundedCorner+ method of raphael for path drawing
+      def rounded_corner(radius, direction)
+        valid_directions = %w{lu ld ru rd ur ul dr dl}
+        raise TypeError("direction should be a string") unless direction.kind_of? String
+        unless valid_directions.include? direction
+          raise ArgumentError("#{direction.inspect} is not a valid parameter #{valid_directions}")
+        end
+        @canvas << js_method('addRoundedCorner', radius, direction)
+      end
+
+      # Wrapper for the +andClose+ method of raphael for path drawing
+      def and_close
+        @canvas << js_method('andClose')
+      end
+
+      def method_missing(name, *args, &block)   #:nodoc:
+        if name.to_s =~ /^(lu|ld|ru|rd|ur|ul|dr|dl)_corner$/
+          rounded_corner(args[0], $1) 
+            # In Ruby 1.9 one could call rc(*args, radius)
+        else
+          super(name, *args, &block)
+        end
+      end
+
+      # Define chainable methods and aliases
+      chainable :absolutely, :relatively
+      chainable :move_to, :line_to, :cpline_to, :curve_to, :qcurve_to
+      chainable :rounded_corner, :and_close
+      alias to move_to
+      alias line line_to
+      alias curve curve_to
+      alias rel relatively
+      alias abs absolutely
+      alias wave_to cpline_to
+      alias rc rounded_corner
+      alias close and_close
+
     end
 
   end
