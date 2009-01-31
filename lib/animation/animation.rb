@@ -1,4 +1,5 @@
-require 'animation/javascript_literal'
+dirname = File.dirname(__FILE__)
+require File.join(dirname, '../animation/javascript_literal')
 
 module Rafa
   module Animation

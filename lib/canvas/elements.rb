@@ -1,6 +1,7 @@
-require 'util/util'
-require 'canvas/attributes'
-require 'canvas/boundingbox'
+dirname = File.dirname(__FILE__)
+require File.join(dirname, '../util/util')
+require File.join(dirname, '../canvas/attributes')
+require File.join(dirname, '../canvas/boundingbox')
 
 #--
 # TODO: Refactor a way to call "#{@name}.method(#{arguments}) generically"

@@ -1,5 +1,6 @@
-require 'util/util'
-require 'canvas/elements'
+dirname = File.dirname(__FILE__)
+require File.join(dirname, '../util/util')
+require File.join(dirname, '../canvas/elements')
 
 module Rafa
   module Elements
