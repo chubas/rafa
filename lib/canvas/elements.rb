@@ -16,6 +16,7 @@ module Rafa
       
       include Rafa::Elements::Attributes
       include Rafa::Util
+      include Rafa::Util::Exceptions
       
       attr_accessor :canvas, :name, :bbox
 
@@ -110,9 +111,11 @@ module Rafa
       def []=(attribute, value)
         attribute = attribute.to_s
         attribute = attribute.to_s.gsub(/[^a-zA-Z0-9_\-]/, '')
+        # FIXME => Attributes per class
         unless POSSIBLE_ATTRIBUTES.include? attribute
           # FIXME: Log, don't print
           puts "Warning! Attribute #{attribute} not recognized"
+          @canvas << js_method('attr', {attribute => value})
           return nil
         end
         @canvas << js_method('attr', {attribute => value})
@@ -210,7 +213,6 @@ module Rafa
     class Path < BasicShape
 
       def initialize(canvas, attributes_or_path = {}, path = nil, &block)
-        puts "Initializing path #{self}!"
         if attributes_or_path.kind_of? String
           path = attributes_or_path
           options = {}
@@ -219,11 +221,10 @@ module Rafa
           options = attributes_or_path
           super(canvas, options)
         else
-          raise BadConstructorException("Second parameter should be either string or hash")
+          raise BadConstructorException.new("Second parameter should be either string or hash")
         end
-        path_str = path ? "" : ", #{path.to_json}"
-        @canvas << "var #{@name} = #{@canvas.name}.path({}#{path_str});"
-        apply_attributes(options)
+        @canvas << "var #{@name} = #{@canvas.name}.path(#{options.to_json}, #{path.to_json});"
+        #apply_attributes(options)
         #yield self if block_given?
         self.instance_eval(&block) if block_given?
       end

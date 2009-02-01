@@ -1,3 +1,6 @@
+dirname = File.dirname(__FILE__)
+require File.join(dirname, '../util/exceptions')
+
 module Rafa
   module Util
 

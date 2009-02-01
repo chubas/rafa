@@ -1,0 +1,57 @@
+<div id="placeholder" style="text-align:center; background-color:#333">
+  <div style="font-size:large; font-weight:bold; font-color:#eee">
+    Rafa example <br />
+    2009 - Ruben Medellin
+  </div>
+</div>
+<%=
+  canvas('placeholder', 500, 500) do |canvas|
+
+    text_options = {'font-size' => 22, 'fill' => '#00f000'}
+    
+    # Easy animation inline
+    canvas.text(250, 30, "Simple animation", text_options)
+    animated_circle = canvas.circle(250, 60, 20, 'fill' => '#fff')
+    animated_circle.animate(10.seconds, :fill => '#f70')
+  
+    # or in blocks
+    canvas.text(250, 120, "Chained animation", text_options)
+    animated_ellipse = canvas.ellipse(250, 170, 40, 50, :fill => '#fff')
+    dummytext = canvas.text(250, 200, "Animating...", :id => 'dummytext')
+    dummytext.apply_attributes('font-size' => 16, 'fill' => '#ff0')
+    animated_ellipse.animate(5.seconds) do |anim|
+      anim.fill('#3df').attr('stroke-width', 10).scale(1.2, 0.3)
+
+      # Chain animations. It will animate when the first finish, and the second one
+      # will last 5 seconds
+      anim.chain(5.seconds) do |after|
+        after.fill('#ff0')
+        after.attr('stroke-width', 5)
+        after.stroke('#f09')
+        after.call_when_finished("dummytext.attr('text', 'Finished!')")
+      end
+
+      # Hook events at the end of animation, as callbacks
+      anim.call_when_finished("dummytext.attr('text', 'Will continue animation...')")
+    end
+
+
+    canvas.text(250, 250, "Continuous animation", text_options)
+    # Large javascript insertion with here documents
+    canvas << <<-RC 
+      var randomColor = function() {
+        var colors = [  
+          '#785629', '#DA0C00', '#E1A12E', '#FFE8AD', '#75B331', '#87B30A',
+          '#A1E82A', '#477546', '#A9C274', '#66A546', '#3D3D3D', '#4AC2C2'
+        ]
+        return colors[Math.floor(Math.random() * colors.length)]
+      };
+    RC
+
+    # Continuous animation
+    canvas.rect(225, 300, 100, 100).every(2.seconds) do |r|
+      r.rotate(js_literal("Math.ceil(Math.random() * 360)"))
+      r.fill(js_literal("randomColor()"))
+    end
+  end
+%>

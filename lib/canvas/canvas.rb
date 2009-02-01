@@ -9,12 +9,24 @@ module Rafa
     # resulting javascript for the block call.
     # This includes everything generated within it.
     def canvas(*args, &block)
+      if args.last.kind_of?(Hash)
+        options = args.last
+        args = args[0...-1]
+      else
+        options = {}
+      end
 
       # TODO: Is there a way to detect if the block is called inline or
       # is included as erb text?
       c = Canvas.new(*args, &block)
       yield c
-      javascript_tag(c.contents.join("\n"))
+      
+      wrap_in_script_tag = options.delete(:wrap) || true
+      if wrap_in_script_tag
+        javascript_tag(c.contents.join("\n"))
+      else
+        c.contents.join("\n")
+      end
     end
     
     # Class that represents the raphael +canvas+ element.

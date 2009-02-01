@@ -1,0 +1,39 @@
+<div id="placeholder" style="text-align:center; background-color:#333">
+  <div style="font-size:large; font-weight:bold; font-color:#eee">
+    Rafa example <br />
+    2009 - Ruben Medellin
+  </div>
+</div>
+
+<style type="text/css">
+  .fancy_text {
+    fill: #9f0;
+    font-family: monospace;
+    stroke-width: 1;
+    stroke-dasharray: 10,5;
+    stroke: #000;
+    font-weight: bold;
+    font-size: 40px;
+  }
+</style>
+<%=
+  canvas('placeholder', 500, 500) do |canvas|
+
+    canvas.text 250, 30, "Mom, look, I'm scalable!",
+      'font-size' => 20,
+      'fill' => '#fc0'
+    
+    %w{I can also be ccs-ed}.each_with_index do |text, i|
+      canvas.text 200, 100 + i * 30, text, :class => 'fancy_text'
+    end
+
+    t = canvas.text(300, 250, "As well as other things")
+    t.fill = '#f09'
+    t['font-size'] = 25
+    t.rotate(-30)
+    t.animate(5.seconds) do |anim|
+      anim.fill = '#09f'
+    end
+
+  end
+%>

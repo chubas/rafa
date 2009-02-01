@@ -8,6 +8,6 @@ Currently works with Raphael version 0.6.3
 Example
 =======
 
-You can see the example at rafa/examples/example.html.erb
+You can see examples in the directory rafa/examples/
 
 Copyright (c) 2009 Ruben Medellin <ruben.medellin.c@gmail.com>, released under the MIT license

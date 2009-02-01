@@ -1,0 +1,21 @@
+<div id="placeholder" style="text-align:center; background-color:#333">
+  <div style="font-size:large; font-weight:bold; font-color:#eee">
+    Rafa example <br />
+    2009 - Ruben Medellin
+  </div>
+</div>
+
+<%=
+  canvas('placeholder', 500, 500) do |canvas|
+
+    options = {:fill => '#09f', :stroke => '#9f0', "stroke-width" => 3}
+
+    original_path = "M 88.541697,158.56668 C 88.541697,158.56668 95.714286,123.79075 77.142857,140.93361 C 58.571429,158.07647 54.285714,208.07647 98.571429,202.36218 C 142.85714,196.6479 168.05149,151.74071 240.90863,84.597852 C 313.76577,17.454998 77.113121,217.13811 88.541697,158.56668 z"
+
+    canvas.path(options, original_path)
+    scaled = canvas.path(original_path).scale(0.5, 2).translate(100, 100).rotate(90)
+    scaled.fill('#90f')
+
+
+  end
+%>

@@ -1,4 +1,5 @@
-* Add path creation as a basic shape
+- Add path creation as a basic shape
+* Add image as a basic shape
 * Add a custom method to check or specify valid attributes for shapes
 * Add more comprehensive errors and exceptions
 * MAKE TESTS!

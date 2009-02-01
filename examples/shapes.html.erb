@@ -1,0 +1,34 @@
+<div id="placeholder" style="text-align:center; background-color:#333">
+  <div style="font-size:large; font-weight:bold; font-color:#eee">
+    Rafa example <br />
+    2009 - Ruben Medellin
+  </div>
+</div>
+<%=
+  # Construction of canvas via div id or by specifying coordinates
+  canvas('placeholder', 400, 400) do |canvas|
+
+    # Easy integration with Ruby builtin methods
+    width = 2
+    30.step(350, 30) do |i|
+      canvas.circle i,
+        20, 10,
+        'stroke-width' => (width * 0.5).to_i,
+        :stroke => '#cf7',
+        :fill => 'cf0'
+      width += 1
+    end
+
+    # Ability to name a variable to be used in plain js
+    rect = canvas.rect(80, 80, 130, 160, :rounded => 20, :fill => '#af3', :id => 's')
+    canvas << "s.node.onmouseover = function(){ s.attr('stroke-width', 10) };"
+    canvas << "s.node.onmouseout = function(){ s.attr('stroke-width', 3) };"
+
+    # Attribute access via several methods
+    ell = canvas.ellipse(200, 200, 100, 40)
+    ell.fill('#109f8d').attr('stroke-width', 3)
+    ell.stroke = '#e8d'
+    ell['stroke-dasharray'] = '-..'
+
+  end
+%>
