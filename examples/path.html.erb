@@ -1,32 +1,34 @@
 <div id="placeholder" style="text-align:center; background-color:#333">
-  <div style="font-size:large; font-weight:bold; font-color:#eee">
+  <div style="font-size:large; font-weight:bold; color:#eee">
     Rafa example <br />
     2009 - Ruben Medellin
   </div>
 </div>
 <%=
-  canvas('placeholder', 500, 500) do |canvas|
+  canvas('placeholder', 600, 600) do |canvas|
 
     # Fig 1
-    p1 = canvas.path(:stroke => '#9f0', 'stroke-width' => 3)
-    p1.fill = '#11a800'
-    p1.move_to(10, 10).line_to(30, 50).wave_to(100, 100, 60)
-    p1.curve_to(200, 10, 200, 30, 250, 50).qcurve_to(150, 150, 200, 200)
-    p1.line_to(30, 80).and_close
-    
-    # Fig 2
-    p2 = canvas.path(:stroke => '#09f', 'stroke-width' => 5)
-    p2.move_to(300, 25)
-    10.times do |i|
-      p2.wave_to(300, (i + 1) * 40, (i + 1) * 20)
+    canvas.path(:stroke => '#9f0', :stroke_width => 3, :fill => '#11a800') do
+      move_to(10, 10).line_to(30, 50).wave_to(100, 100, 60)
+      curve_to(200, 10, 200, 30, 250, 50).qcurve_to(150, 150, 200, 200)
+      line_to(30, 80).and_close
     end
 
+    # Fig 2
+    canvas.path(:stroke => '#09f', :stroke_width => 5) do
+      move_to(300, 25)
+      10.times do |i|
+        wave_to(300, (i + 1) * 40, (i + 1) * 20)
+      end
+    end
+
+
     # Fig 3
-    p3 = canvas.path(:stroke => '#f09', 'stroke-width' => 6) do
+    canvas.path(:stroke => '#f09', :stroke_width => 6) do
       move_to(125, 250 + 125)
-      rel
+      relatively
       move_to(0, -10)
-      directions = ['rd', 'dl', 'lu', 'ur']
+      directions = [:rd, :dl, :lu, :ur]
       0.upto(20) do |i|
         rounded_corner((i + 1) * 10, directions[i % 4])
       end

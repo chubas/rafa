@@ -1,37 +1,31 @@
 <div id="placeholder" style="text-align:center; background-color:#333">
-  <div style="font-size:large; font-weight:bold; font-color:#eee">
+  <div style="font-size:large; font-weight:bold; color:#eee">
     Rafa example <br />
     2009 - Ruben Medellin
   </div>
 </div>
 <%=
-  canvas('placeholder', 500, 500) do |canvas|
+  canvas('placeholder', 600, 600) do |canvas|
 
-    make_triangle = Proc.new do
-      x, y = (rand(300) + 100), (rand(300) + 100)
-      p = canvas.path
-      p.move_to(x, y)
-      p.relatively
-      2.times do
-        deltax, deltay = (rand(200) - 100), (rand(200) - 100)
-        p.line_to(deltax, deltay)
+    20.times do
+      triangle = canvas.path do
+        move_to rand(500) + 100, rand(500) + 100
+        relatively
+        line_to (rand(200) - 100), (rand(200) - 100)
+        line_to (rand(200) - 100), (rand(200) - 100)
+        close
       end
-      p.close
-      p
-    end
 
-    random_color = Proc.new do
-      "#%02x%02x%02x" % [rand(255), rand(255), rand(255)]
-    end
+      #Define random color
+      random_color = "#%02x%02x%02x" % [rand(255), rand(255), rand(255)]
 
-    10.times do
-      fig = make_triangle.call
-      color = random_color.call
-      fig["fill"] = color
-      bbox = fig.bbox
-      rect = canvas.rect(
+      triangle['fill'] = random_color
+      bbox = triangle.bbox
+      canvas.rect(
         bbox.x, bbox.y, bbox.w, bbox.h,
-        "stroke-width" => 1, "stroke" => color)
+        :stroke_width => 2,
+        :stroke       => random_color
+      )
     end
     
   end

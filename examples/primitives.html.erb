@@ -1,0 +1,59 @@
+<div id="placeholder" style="text-align:center; background-color:#333">
+  <div style="font-size:large; font-weight:bold; color:#eee">
+    Rafa example <br />
+    2009 - Ruben Medellin
+  </div>
+</div>
+<%=
+  canvas('placeholder', 600, 600) do |canvas|
+
+    params = {'stroke' => '#9f0', 'stroke-width' => 3, 'fill' => '#444'}
+
+    1.5.step(598.5, 149.25) do |coord|
+      canvas.path(params) do
+        move_to coord, 0
+        line coord, 600
+      end
+
+      canvas.path(params) do
+        move_to 0, coord
+        line 600, coord
+      end
+    end
+
+
+    # Circle
+    canvas.circle(75, 75, 50, params)
+
+    # Rectangle
+    canvas.rect(175, 40, 100, 70, params)
+
+    # Ellipse
+    canvas.ellipse(375, 75, 50, 35, params)
+
+    # Image
+    canvas.image('/images/tiger.png', 475, 25, 100, 100)
+
+    # Set
+    canvas.set(params) do |set|
+      set << canvas.circle(62.5, 212.5, 32.5)
+      set << canvas.rect(62.5, 212.5, 62.5, 62.5)
+    end
+
+    # Text
+    canvas.text(225, 225, "Text",
+                :font_family => 'monospace',
+                :font_weight => 'bold',
+                :font_size   => '45px',
+                :stroke      => '#9f0',
+                :fill        => '#444')
+    # Path
+    canvas.path(:stroke => '#9f0', :stroke_width => 2) do
+      move_to 325, 275
+      line_to 375, 175
+      line_to 375, 275
+      line_to 425, 175
+    end
+
+  end
+%>
