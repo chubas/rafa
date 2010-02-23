@@ -5,12 +5,13 @@ module Rafa
     # Used when some javascript is intended to be used as a parameter, because
     # a simple string passed is converted to a javascript string object internally.
     # e.g.
-    # figure['rotation'] = js_literal('(new Date()).getSeconds()')
+    # <tt>figure['rotation'] = js_literal('(new Date()).getSeconds()')</tt>
     #
-    # see +javascript_literal+
+    # see <em>javascript_literal</em>
     class JavascriptLiteral
       attr_accessor :js
 
+      # Initializer with the javascript code printed directly to the output.
       def initialize(js)
         @js = js
       end
@@ -21,7 +22,7 @@ module Rafa
       end
     end
     
-    # See +JavascriptLiteral#new+
+    # See JavascriptLiteral#new
     def js_literal(js)
       JavascriptLiteral.new(js)
     end

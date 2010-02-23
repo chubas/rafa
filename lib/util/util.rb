@@ -1,6 +1,3 @@
-dirname = File.dirname(__FILE__)
-require File.join(dirname, '../util/exceptions')
-
 module Rafa
   module Util
 
@@ -9,11 +6,21 @@ module Rafa
       return radians * (180 / Math::PI)
     end
 
-    # Generates a _supposedly_ unique id for using in naming javascript generated
-    # variable names
-    def uid_suffix
-      (Time.now.to_i * rand).to_i.to_s
+    module ArrayExtensions # :nodoc: all
+
+      # Handy method to be able to pass arguments to a javascript function.
+      # Differs from a simple +to_json+ by removing the enclosing brackets
+      def to_js_args(separator = ', ')
+        map(&:to_json).join(separator)
+      end
     end
 
   end
+end
+
+class Array # :nodoc:
+
+  # Monkeypatch Array class to include the method
+  include Rafa::Util::ArrayExtensions
+
 end

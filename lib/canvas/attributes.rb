@@ -3,17 +3,16 @@ module Rafa
     module Attributes
       
       # Taken literally from http://raphaeljs.com/reference.html#attr
-      POSSIBLE_ATTRIBUTES = [  
+      POSSIBLE_ATTRIBUTES = [
+        'clip-rect', # string (x, y, width, height)
         'cx', # number
         'cy', # number
-        'dasharray', # string [“-”, “.”, “-.”, “-..”, “. ”, “- ”, “--”, “- .”, “--.”, “--..”]
         'fill', # colour
         'fill-opacity', # number
         'font', # string
         'font-family', # string
         'font-size', # number
         'font-weight', # string
-        'gradient', # object
         'height', # number
         'opacity', # number
         'path', # pathString
@@ -22,7 +21,9 @@ module Rafa
         'rx', # number
         'ry', # number
         'scale', # CSV
+        'src', # string (URL)
         'stroke', # colour
+        'stroke-dasharray', # string [“-”, “.”, “-.”, “-..”, “. ”, “- ”, “--”, “- .”, “--.”, “--..”]
         'stroke-linecap', # string [“butt”, “square”, “round”, “miter”]
         'stroke-linejoin', # string [“butt”, “square”, “round”, “miter”]
         'stroke-miterlimit', # number
@@ -31,7 +32,8 @@ module Rafa
         'translation', # CSV
         'width', # number
         'x', # number
-        'y' # number
+        'y', # number
+      'gradient', # object
       ]
       
     end

@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + '/javascript_literal'
+
 module Rafa
   module Elements
 
@@ -18,7 +20,7 @@ module Rafa
       # If the bounding box changed (updated position, width or height)
       # it forces a new bbox request
       def update!
-        inject_js
+        inject_js(true)
         self
       end
 
@@ -48,11 +50,11 @@ module Rafa
       def attr(name) #:nodoc:
         varname = @name + '_' + name
         @element.canvas << "var #{varname} = #{@name}.#{name};"
-        return varname
+        return JavascriptLiteral.new(varname)
       end
 
-      def inject_js
-        @element.canvas << "var #{@name} = #{@element.name}.getBBox();"
+      def inject_js(reload = false)
+        @element.canvas << "#{'var' if reload} #{@name} = #{@element.name}.getBBox();"
       end
 
     end
